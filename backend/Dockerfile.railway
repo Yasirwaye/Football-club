@@ -1,25 +1,26 @@
-# PostgreSQL Database Service
-# Use Railway's PostgreSQL plugin instead
-
-# Backend Service Configuration
 FROM python:3.11-slim
 
 WORKDIR /app
 
+# Install system dependencies
 RUN apt-get update && apt-get install -y \
     gcc \
     postgresql-client \
     libpq-dev \
     && rm -rf /var/lib/apt/lists/*
 
-COPY backend/requirements.txt .
+# Copy requirements (Railway sets Root Directory to backend/)
+COPY requirements.txt .
 RUN pip install --no-cache-dir -r requirements.txt
 
-COPY backend /app
+# Copy application code
+COPY . .
 
+# Create non-root user for security
 RUN useradd -m -u 1000 appuser && chown -R appuser:appuser /app
 USER appuser
 
 EXPOSE 5000
 
-CMD ["gunicorn", "--bind", "0.0.0.0:5000", "--workers", "4", "--threads", "2", "app:app"]
+# Initialize database and start server
+CMD ["sh", "-c", "python init_db.py && gunicorn --bind 0.0.0.0:5000 --workers 4 --threads 2 app:app"]

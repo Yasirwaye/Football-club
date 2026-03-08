@@ -9,10 +9,17 @@ import os
 app = Flask(__name__)
 app.config.from_object(Config)
 
-# Enable CORS - VERY IMPORTANT
+# Configure CORS based on environment
+if os.environ.get('FLASK_ENV') == 'production':
+    # In production, allow from environment variables
+    cors_origins = os.environ.get('CORS_ORIGINS', 'http://localhost:3000').split(',')
+else:
+    # In development, allow localhost origins
+    cors_origins = ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001"]
+
 CORS(app, resources={
     r"/api/*": {
-        "origins": ["http://localhost:3000", "http://localhost:3001", "http://127.0.0.1:3000", "http://127.0.0.1:3001"],
+        "origins": cors_origins,
         "methods": ["GET", "POST", "PUT", "DELETE", "OPTIONS"],
         "allow_headers": ["Content-Type", "Authorization"]
     }
