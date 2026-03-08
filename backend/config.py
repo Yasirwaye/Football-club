@@ -1,15 +1,20 @@
 import os
 from dotenv import load_dotenv
 
-basedir = os.path.abspath(os.path.dirname(__file__))
-load_dotenv(os.path.join(basedir, '.env'))
+# Load environment variables from .env file in project root
+project_root = os.path.dirname(os.path.dirname(os.path.abspath(__file__)))
+load_dotenv(os.path.join(project_root, '.env'))
 
 class Config:
-    SECRET_KEY = os.environ.get('SECRET_KEY') or 'dev-secret-key-change-in-production'
+    # Require SECRET_KEY to be set - no insecure defaults
+    SECRET_KEY = os.environ.get('SECRET_KEY')
+    if not SECRET_KEY:
+        raise ValueError("SECRET_KEY environment variable is required")
+
     SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'sqlite:///eastleigh_academy.db'
     SQLALCHEMY_TRACK_MODIFICATIONS = False
     CORS_HEADERS = 'Content-Type'
-    
-    # For PostgreSQL in Docker
-    if os.environ.get('DOCKER_ENV'):
-        SQLALCHEMY_DATABASE_URI = os.environ.get('DATABASE_URL') or 'postgresql://postgres:postgres@db:5432/eastleigh_academy'
+
+    # Environment settings
+    FLASK_ENV = os.environ.get('FLASK_ENV', 'development')
+    DOCKER_ENV = os.environ.get('DOCKER_ENV', 'false').lower() == 'true'

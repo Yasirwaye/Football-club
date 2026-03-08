@@ -2,9 +2,9 @@ import React, { useState, useEffect } from 'react';
 import { X, Plus, Trash2, Edit2, Shield, Database, AlertTriangle, Lock, LogOut } from 'lucide-react';
 import { squadAPI, playerAPI, applicationAPI, initDatabase } from '../services/api';
 
-// Admin credentials - CHANGE THIS IN PRODUCTION!
-const ADMIN_USERNAME = 'admin';
-const ADMIN_PASSWORD = 'eastleigh2024';
+// Admin credentials - loaded from environment variables
+const ADMIN_USERNAME = process.env.REACT_APP_ADMIN_USERNAME || 'admin';
+const ADMIN_PASSWORD = process.env.REACT_APP_ADMIN_PASSWORD || 'change-this-password';
 
 const AdminPanel = ({ onClose }) => {
   const [isAuthenticated, setIsAuthenticated] = useState(false);

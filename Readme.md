@@ -256,20 +256,37 @@ chmod +x tasks.py  # Make executable
 
 ## 🔒 Security Checklist for Production
 
-1. **Change default passwords** in `docker-compose.yml`:
-   - `POSTGRES_PASSWORD`
-   - `SECRET_KEY`
-
-2. **Never commit `.env` files** with real credentials
-
-3. **Restrict CORS** in `backend/config.py`
-
-4. **Use HTTPS** in production (configure nginx SSL)
-
-5. **Regular backups**:
+### ✅ Environment Variables Setup
+1. **Copy `.env.example` to `.env`**:
    ```bash
-   python tasks.py backup --filename=prod_$(date +%Y%m%d).sql
+   cp .env.example .env
    ```
+
+2. **Generate secure SECRET_KEY**:
+   ```bash
+   python3 -c "import secrets; print(secrets.token_hex(32))"
+   ```
+   Replace the value in `.env`
+
+3. **Set strong passwords** in `.env`:
+   - `POSTGRES_PASSWORD`: Use a strong, random password
+   - `ADMIN_PASSWORD`: Use a secure admin password
+   - `SECRET_KEY`: Use the generated secret key
+
+### ⚠️ Critical Security Notes
+- **Never commit `.env` files** - they're in `.gitignore`
+- **Change all default passwords** before going live
+- **Use HTTPS** in production (configure nginx SSL)
+- **Restrict CORS** origins in production
+- **Regular backups**:
+  ```bash
+  python tasks.py backup --filename=prod_$(date +%Y%m%d).sql
+  ```
+
+### 🔐 Admin Panel Security
+- Admin credentials are now loaded from environment variables
+- Default admin: `admin` / `secure_admin_password_2024` (change immediately!)
+- Consider implementing proper authentication (JWT, OAuth) for production
 
 ## 📝 Database Schema
 
