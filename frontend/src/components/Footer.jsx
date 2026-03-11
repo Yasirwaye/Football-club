@@ -22,7 +22,7 @@ const Footer = () => {
                 className="w-10 h-10 object-contain"
               />
               </div>
-              <span className="font-display font-bold text-xl">EASTLEIGH FC ACADEMY</span>
+              <span className="font-display font-bold text-xl">EASTLEIGH United FC ACADEMY</span>
             </div>
             <p className="text-gray-400 max-w-sm">
               Developing elite football talent since 2020.
