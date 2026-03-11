@@ -17,7 +17,8 @@ COPY postcss.config.js ./
 COPY . .
 
 # Build the app (includes Tailwind compilation)
-RUN npm run build
+# Force rebuild - cache bust
+RUN npm run build --production
 
 # Production stage with nginx
 FROM nginx:alpine
