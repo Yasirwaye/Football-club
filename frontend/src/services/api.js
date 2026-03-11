@@ -187,7 +187,7 @@ export const initDatabase = async () => {
 // Health check
 export const healthCheck = async () => {
   try {
-    const { data, error } = await supabase.from('squads').select('count');
+    const { error } = await supabase.from('squads').select('count');
     if (error) throw error;
     return { status: 'ok' };
   } catch (error) {
