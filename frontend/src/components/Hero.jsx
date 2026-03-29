@@ -1,5 +1,5 @@
 import React from 'react';
-import { ChevronRight, Play, Trophy } from 'lucide-react';
+import { ChevronRight, Trophy } from 'lucide-react';
 
 const Hero = ({ scrollToSection }) => {
   return (
