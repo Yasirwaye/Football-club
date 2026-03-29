@@ -151,13 +151,35 @@ const AdminPanel = ({ onClose }) => {
     });
   };
 
+  const fileToDataUrl = (file) => {
+    return new Promise((resolve, reject) => {
+      if (!file) return resolve('');
+      const reader = new FileReader();
+      reader.onload = () => resolve(reader.result);
+      reader.onerror = () => reject(new Error('Failed to read image file'));
+      reader.readAsDataURL(file);
+    });
+  };
+
   const handleCreatePlayer = async (e) => {
     e.preventDefault();
+
+    if (!playerForm.first_name?.trim() || !playerForm.last_name?.trim()) {
+      alert('First name and last name are required');
+      return;
+    }
+
     try {
-      await playerAPI.create(playerForm);
+      const payload = { ...playerForm };
+      if (playerForm.image_file) {
+        payload.image_url = await fileToDataUrl(playerForm.image_file);
+      }
+      delete payload.image_file;
+
+      await playerAPI.create(payload);
       setShowPlayerForm(false);
       setPlayerForm({
-        first_name: '', last_name: '', age: '', position: 'MID', squad_id: '',
+        first_name: '', last_name: '', age: '', position: 'MID', squad_id: '', image_url: '', image_file: null,
         stats_goals: 0, stats_assists: 0, stats_matches: 0, quote: ''
       });
       loadData();
@@ -168,8 +190,20 @@ const AdminPanel = ({ onClose }) => {
 
   const handleUpdatePlayer = async (e) => {
     e.preventDefault();
+
+    if (!playerForm.first_name?.trim() || !playerForm.last_name?.trim()) {
+      alert('First name and last name are required');
+      return;
+    }
+
     try {
-      await playerAPI.update(editingPlayer.id, playerForm);
+      const payload = { ...playerForm };
+      if (playerForm.image_file) {
+        payload.image_url = await fileToDataUrl(playerForm.image_file);
+      }
+      delete payload.image_file;
+
+      await playerAPI.update(editingPlayer.id, payload);
       setEditingPlayer(null);
       setShowPlayerForm(false);
       loadData();
@@ -228,6 +262,7 @@ const AdminPanel = ({ onClose }) => {
       position: player.position,
       squad_id: player.squad_id,
       image_url: player.image_url || '',
+      image_file: null,
       stats_goals: player.stats_goals || 0,
       stats_assists: player.stats_assists || 0,
       stats_matches: player.stats_matches || 0,
@@ -507,7 +542,7 @@ const AdminPanel = ({ onClose }) => {
                 onClick={() => {
                   setEditingPlayer(null);
                   setPlayerForm({
-                    first_name: '', last_name: '', age: '', position: 'MID', squad_id: '',
+                    first_name: '', last_name: '', age: '', position: 'MID', squad_id: '', image_url: '', image_file: null,
                     stats_goals: 0, stats_assists: 0, stats_matches: 0, quote: ''
                   });
                   setShowPlayerForm(true);
@@ -568,12 +603,12 @@ const AdminPanel = ({ onClose }) => {
                     ))}
                   </select>
                   <input
-                    type="text"
-                    placeholder="Player Photo URL (optional)"
-                    value={playerForm.image_url}
-                    onChange={(e) => setPlayerForm({...playerForm, image_url: e.target.value})}
+                    type="file"
+                    accept="image/*"
+                    onChange={(e) => setPlayerForm({...playerForm, image_file: e.target.files[0] || null})}
                     className="bg-white/5 border border-white/10 rounded-lg px-4 py-2"
                   />
+                  <p className="text-xs text-gray-400 md:col-span-3">Drop a player image here (optional). If not provided, initials will be used.</p>
                   <input
                     type="number"
                     placeholder="Goals"
