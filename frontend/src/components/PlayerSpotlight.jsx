@@ -94,15 +94,15 @@ const PlayerSpotlight = () => {
 
             <div className="grid grid-cols-3 gap-4 mb-6">
               <div className="text-center p-4 bg-white/5 rounded-2xl">
-                <div className="font-display text-2xl font-bold text-green-400">{currentPlayer.stats?.goals || 0}</div>
+                <div className="font-display text-2xl font-bold text-green-400">{currentPlayer.stats_goals || 0}</div>
                 <div className="text-xs text-gray-400">Goals</div>
               </div>
               <div className="text-center p-4 bg-white/5 rounded-2xl">
-                <div className="font-display text-2xl font-bold text-blue-400">{currentPlayer.stats?.assists || 0}</div>
+                <div className="font-display text-2xl font-bold text-blue-400">{currentPlayer.stats_assists || 0}</div>
                 <div className="text-xs text-gray-400">Assists</div>
               </div>
               <div className="text-center p-4 bg-white/5 rounded-2xl">
-                <div className="font-display text-2xl font-bold text-white">{currentPlayer.stats?.matches || 0}</div>
+                <div className="font-display text-2xl font-bold text-white">{currentPlayer.stats_matches || 0}</div>
                 <div className="text-xs text-gray-400">Matches</div>
               </div>
             </div>

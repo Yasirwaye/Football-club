@@ -32,7 +32,7 @@ const AdminPanel = ({ onClose }) => {
     name: '', age_group: '', formation: '4-3-3', head_coach: '', assistant_coach: ''
   });
   const [playerForm, setPlayerForm] = useState({
-    first_name: '', last_name: '', age: '', position: 'MID', squad_id: '',
+    first_name: '', last_name: '', age: '', position: 'MID', squad_id: '', image_url: '',
     stats_goals: 0, stats_assists: 0, stats_matches: 0, quote: ''
   });
 
@@ -227,9 +227,10 @@ const AdminPanel = ({ onClose }) => {
       age: player.age || '',
       position: player.position,
       squad_id: player.squad_id,
-      stats_goals: player.stats?.goals || 0,
-      stats_assists: player.stats?.assists || 0,
-      stats_matches: player.stats?.matches || 0,
+      image_url: player.image_url || '',
+      stats_goals: player.stats_goals || 0,
+      stats_assists: player.stats_assists || 0,
+      stats_matches: player.stats_matches || 0,
       quote: player.quote || ''
     });
     setShowPlayerForm(true);
@@ -567,6 +568,13 @@ const AdminPanel = ({ onClose }) => {
                     ))}
                   </select>
                   <input
+                    type="text"
+                    placeholder="Player Photo URL (optional)"
+                    value={playerForm.image_url}
+                    onChange={(e) => setPlayerForm({...playerForm, image_url: e.target.value})}
+                    className="bg-white/5 border border-white/10 rounded-lg px-4 py-2"
+                  />
+                  <input
                     type="number"
                     placeholder="Goals"
                     value={playerForm.stats_goals}
@@ -642,7 +650,7 @@ const AdminPanel = ({ onClose }) => {
                       </td>
                       <td className="p-4">{getSquadName(player.squad_id)}</td>
                       <td className="p-4 text-sm">
-                        {player.stats?.goals}/{player.stats?.assists}/{player.stats?.matches}
+                        {player.stats_goals || 0}/{player.stats_assists || 0}/{player.stats_matches || 0}
                       </td>
                       <td className="p-4">
                         <div className="flex space-x-2">

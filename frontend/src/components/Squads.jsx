@@ -34,12 +34,28 @@ const Squads = () => {
     return colors[position] || 'bg-gray-500/20 border-gray-500 text-gray-500';
   };
 
+  const normalizePosition = (position) => {
+    if (!position) return 'Bench';
+    const value = position.toString().trim().toUpperCase();
+    if (value.startsWith('GK')) return 'GK';
+    if (value.startsWith('DEF')) return 'DEF';
+    if (value.startsWith('MID')) return 'MID';
+    if (value.startsWith('FWD') || value.startsWith('FOR')) return 'FWD';
+    return 'Bench';
+  };
+
+  const getPlayerFullName = (player) => {
+    const first = player.first_name || '';
+    const last = player.last_name || '';
+    const full = player.full_name || `${first} ${last}`.trim();
+    return full || 'Unnamed Player';
+  };
+
   const groupPlayersByPosition = (players) => {
     const groups = { GK: [], DEF: [], MID: [], FWD: [], Bench: [] };
     players?.forEach(player => {
-      if (groups[player.position]) {
-        groups[player.position].push(player);
-      }
+      const pos = normalizePosition(player.position);
+      groups[pos]?.push(player);
     });
     return groups;
   };
@@ -125,7 +141,7 @@ const Squads = () => {
                         <div className={`w-14 h-14 rounded-full border-2 flex items-center justify-center mb-2 ${getPositionColor(position)}`}>
                           <span className="font-bold text-xs">{position}</span>
                         </div>
-                        <span className="text-xs text-center max-w-[80px] truncate">{player.full_name}</span>
+                        <span className="text-xs text-center max-w-[80px] truncate">{getPlayerFullName(player)}</span>
                       </div>
                     ))}
                     {playerGroups[position]?.length === 0 && (

@@ -16,7 +16,7 @@ export const squadAPI = {
       .from('squads')
       .select(`
         *,
-        players:players(id, first_name, last_name)
+        players:players(id, first_name, last_name, position, stats_goals, stats_assists, stats_matches)
       `)
       .order('name');
     if (error) throw new Error(error.message);
@@ -88,11 +88,9 @@ export const playerAPI = {
       position: data.position,
       squad_id: data.squad_id,
       quote: data.quote || null,
-      stats: {
-        goals: data.stats_goals || 0,
-        assists: data.stats_assists || 0,
-        matches: data.stats_matches || 0,
-      },
+      stats_goals: data.stats_goals || 0,
+      stats_assists: data.stats_assists || 0,
+      stats_matches: data.stats_matches || 0,
     };
     const { data: result, error } = await supabase
       .from('players')
@@ -109,11 +107,9 @@ export const playerAPI = {
       position: data.position,
       squad_id: data.squad_id,
       quote: data.quote || null,
-      stats: {
-        goals: data.stats_goals || 0,
-        assists: data.stats_assists || 0,
-        matches: data.stats_matches || 0,
-      },
+      stats_goals: data.stats_goals || 0,
+      stats_assists: data.stats_assists || 0,
+      stats_matches: data.stats_matches || 0,
     };
     const { data: result, error } = await supabase
       .from('players')
