@@ -32,7 +32,7 @@ const AdminPanel = ({ onClose }) => {
     name: '', age_group: '', formation: '4-3-3', head_coach: '', assistant_coach: ''
   });
   const [playerForm, setPlayerForm] = useState({
-    first_name: '', last_name: '', age: '', position: 'MID', squad_id: '', image_url: '',
+    first_name: '', last_name: '', age: '', position: 'MID', squad_id: '', image_url: '', image_file: null,
     stats_goals: 0, stats_assists: 0, stats_matches: 0, quote: ''
   });
 

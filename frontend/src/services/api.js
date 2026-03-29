@@ -9,6 +9,33 @@ if (!SUPABASE_URL || !SUPABASE_ANON_KEY) {
 
 const supabase = createClient(SUPABASE_URL || '', SUPABASE_ANON_KEY || '');
 
+export const storageAPI = {
+  uploadPlayerPhoto: async (file, playerId) => {
+    if (!file) return null;
+
+    const fileExtension = file.name.split('.').pop();
+    const key = `player-photos/${playerId || Date.now()}-${Math.random().toString(36).slice(2)}.${fileExtension}`;
+
+    const { data: uploadData, error: uploadError } = await supabase.storage
+      .from('player-photos')
+      .upload(key, file, { cacheControl: '3600', upsert: false });
+
+    if (uploadError) {
+      throw new Error(uploadError.message);
+    }
+
+    const { data: publicUrlData, error: publicUrlError } = supabase.storage
+      .from('player-photos')
+      .getPublicUrl(key);
+
+    if (publicUrlError) {
+      throw new Error(publicUrlError.message);
+    }
+
+    return publicUrlData.publicUrl;
+  },
+};
+
 // Squad APIs
 export const squadAPI = {
   getAll: async () => {
@@ -87,6 +114,7 @@ export const playerAPI = {
       age: data.age || null,
       position: data.position,
       squad_id: data.squad_id,
+      image_url: data.image_url || null,
       quote: data.quote || null,
       stats_goals: data.stats_goals || 0,
       stats_assists: data.stats_assists || 0,
@@ -106,6 +134,7 @@ export const playerAPI = {
       age: data.age || null,
       position: data.position,
       squad_id: data.squad_id,
+      image_url: data.image_url || null,
       quote: data.quote || null,
       stats_goals: data.stats_goals || 0,
       stats_assists: data.stats_assists || 0,
