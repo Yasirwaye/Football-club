@@ -76,12 +76,17 @@ const AdminPanel = ({ onClose }) => {
     }
   };
 
-  const handleLogout = () => {
-    setIsAuthenticated(false);
-    localStorage.removeItem('eastleigh_admin_token');
-    setUsername('');
-    setPassword('');
-  };
+  const handleLogout = async () => {
+  try {
+    await adminAPI.logout();
+  } catch (err) {
+    console.error('Logout error:', err);
+  }
+  setIsAuthenticated(false);
+  localStorage.removeItem('eastleigh_admin_token');
+  setUsername('');
+  setPassword('');
+};
 
   const loadData = useCallback(async () => {
     setLoading(true);

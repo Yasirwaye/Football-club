@@ -332,6 +332,7 @@ const parseResponse = async (response) => {
   return data;
 };
 
+// eslint-disable-next-line no-unused-vars
 const apiFetch = async (path, options = {}) => {
   const candidates = [];
   if (API_BASE_URL) candidates.push(API_BASE_URL);
@@ -377,52 +378,88 @@ const apiFetch = async (path, options = {}) => {
   throw lastError || new Error('Could not connect to API');
 };
 
-// Admin APIs
+// // Admin APIs
+// export const adminAPI = {
+//   signup: async ({ username, email, password }) => {
+//     return await apiFetch('/api/admin/signup', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ username, email, password }),
+//     });
+//   },
+//   login: async ({ email, password }) => {
+//     return await apiFetch('/api/admin/login', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ email, password }),
+//     });
+//   },
+//   exists: async () => {
+//     try {
+//       const data = await apiFetch('/api/admin/exists');
+//       return !!data.exists;
+//     } catch (err) {
+//       if (err.message.toLowerCase().includes('403') || err.message.toLowerCase().includes('404')) {
+//         return false;
+//       }
+//       throw err;
+//     }
+//   },
+//   resetPassword: async (email) => {
+//     return await apiFetch('/api/admin/reset-password', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ email }),
+//     });
+//   },
+//   confirmReset: async ({ token, new_password }) => {
+//     return await apiFetch('/api/admin/reset-password/confirm', {
+//       method: 'POST',
+//       headers: { 'Content-Type': 'application/json' },
+//       body: JSON.stringify({ token, new_password }),
+//     });
+//   },
+//   list: async () => {
+//     return await apiFetch('/api/admin/list');
+//   },
+//   delete: async (id) => {
+//     return await apiFetch(`/api/admin/${id}`, { method: 'DELETE' });
+//   }
+// };
+
+// Admin APIs using Supabase Auth
 export const adminAPI = {
-  signup: async ({ username, email, password }) => {
-    return await apiFetch('/api/admin/signup', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ username, email, password }),
+  signup: async ({ email, password }) => {
+    const { data, error } = await supabase.auth.signUp({
+      email,
+      password,
     });
+    if (error) throw new Error(error.message);
+    return { message: 'Admin created successfully', access_token: data.session?.access_token };
   },
+  
   login: async ({ email, password }) => {
-    return await apiFetch('/api/admin/login', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email, password }),
+    const { data, error } = await supabase.auth.signInWithPassword({
+      email,
+      password,
     });
-  },
-  exists: async () => {
-    try {
-      const data = await apiFetch('/api/admin/exists');
-      return !!data.exists;
-    } catch (err) {
-      if (err.message.toLowerCase().includes('403') || err.message.toLowerCase().includes('404')) {
-        return false;
-      }
-      throw err;
+    if (error) throw new Error(error.message);
+    if (data.session?.access_token) {
+      localStorage.setItem('eastleigh_admin_token', data.session.access_token);
     }
+    return { message: 'Login successful', access_token: data.session?.access_token };
   },
-  resetPassword: async (email) => {
-    return await apiFetch('/api/admin/reset-password', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ email }),
-    });
+  
+  logout: async () => {
+    const { error } = await supabase.auth.signOut();
+    if (error) throw new Error(error.message);
+    localStorage.removeItem('eastleigh_admin_token');
+    return { message: 'Logged out successfully' };
   },
-  confirmReset: async ({ token, new_password }) => {
-    return await apiFetch('/api/admin/reset-password/confirm', {
-      method: 'POST',
-      headers: { 'Content-Type': 'application/json' },
-      body: JSON.stringify({ token, new_password }),
-    });
-  },
-  list: async () => {
-    return await apiFetch('/api/admin/list');
-  },
-  delete: async (id) => {
-    return await apiFetch(`/api/admin/${id}`, { method: 'DELETE' });
+  
+  exists: async () => {
+    const { data: { user } } = await supabase.auth.getUser();
+    return !!user;
   }
 };
 
